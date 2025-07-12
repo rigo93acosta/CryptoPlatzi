@@ -2,6 +2,19 @@
 
 Este es la versión en Python del proyecto de criptografía CLI.
 
+## 🔗 Repositorio Original
+
+Este proyecto es un **clon en Python** del curso de criptografía de Platzi:
+- 📚 **Repositorio original**: [platzi/curso-criptografia](https://github.com/platzi/curso-criptografia)
+- 💻 **Tecnología original**: TypeScript/Node.js
+- 🐍 **Esta versión**: Python con `uv` como gestor de dependencias
+
+### ¿Por qué esta versión?
+- Implementación en Python para aprender el ecosistema Python
+- Uso de `uv` como gestor moderno de dependencias
+- Mantiene la misma funcionalidad del proyecto original
+- Estructura de código adaptada a las mejores prácticas de Python
+
 ## Instalación
 
 ### Con uv (recomendado)
@@ -149,6 +162,12 @@ python -m src.main diffie-hellman --encoding hex
 - Los archivos de claves se generan en el directorio `.secrets` por defecto
 - Se recomienda usar contraseñas seguras para proteger las claves privadas
 
+## 🎓 Créditos
+
+- **Curso original**: [Curso de Criptografía](https://platzi.com/cursos/criptografia/) - Platzi
+- **Repositorio original**: [platzi/curso-criptografia](https://github.com/platzi/curso-criptografia)
+- **Adaptación a Python**: Implementación propia basada en el curso original
+
 ## Comandos útiles de uv
 
 ```bash
@@ -167,3 +186,28 @@ uv run <command>
 # Activar el entorno virtual manualmente (opcional)
 uv venv --activate
 ```
+
+## 📊 Comparación con el Original
+
+| Aspecto | Original (TypeScript) | Esta versión (Python) |
+|---------|----------------------|----------------------|
+| **Lenguaje** | TypeScript/Node.js | Python 3.13+ |
+| **Gestor de dependencias** | npm/yarn | uv |
+| **Estructura** | Módulos ES6 | Módulos Python |
+| **CLI Framework** | Commander.js | Click |
+| **Crypto Library** | Node.js crypto | Python cryptography |
+| **Configuración** | package.json | pyproject.toml |
+
+## 🔧 Funcionalidades Implementadas
+
+Todas las funcionalidades del proyecto original han sido portadas:
+
+- ✅ **PRNG**: Generación de números aleatorios
+- ✅ **Cifrado simétrico**: AES con derivación de claves
+- ✅ **Hash**: SHA-256, SHA-512, etc.
+- ✅ **HMAC**: Autenticación de mensajes
+- ✅ **Scrypt**: Derivación de claves robusta
+- ✅ **RSA**: Generación de pares de claves
+- ✅ **Firma digital**: RSA-SHA256
+- ✅ **Verificación**: Validación de firmas
+- ✅ **Diffie-Hellman**: Intercambio de claves
