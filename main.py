@@ -5,7 +5,7 @@ from pathlib import Path
 from src.cipher import cipher
 from src.decipher import decipher
 from src.prng import prng
-from src.hash import hash_file
+from src.hash import hash_file, get_supported_algorithms, get_common_algorithms
 from src.hmac import hmac_file
 from src.diffie_hellman import diffie_hellman
 from src.keypair import keypair
@@ -76,14 +76,49 @@ def scrypt_cmd(password, salt, size, encoding):
 
 @cli.command()
 @click.option('--algorithm', '-a', default='sha256', help='Hash algorithm')
-@click.option('--input', '-i', required=True, help='File to hash')
+@click.option('--input', '-i', help='File to hash')
 @click.option('--encoding', '--enc', default='hex',
               type=click.Choice(['hex', 'base64', 'ascii', 'utf-8']),
               help='Encoding format')
-def hash_cmd(algorithm, input, encoding):
+@click.option('--list-algorithms', is_flag=True, help='List all supported algorithms')
+@click.option('--show-common', is_flag=True, help='Show common algorithms with descriptions')
+def hash_cmd(algorithm, input, encoding, list_algorithms, show_common):
     """Hash a file"""
-    result = hash_file(algorithm, encoding, input)
-    click.echo(result)
+    if list_algorithms:
+        algorithms = sorted(get_supported_algorithms())
+        click.echo("All supported hash algorithms:")
+        for algo in algorithms:
+            click.echo(f"  - {algo}")
+        return
+    
+    if show_common:
+        common_algos = get_common_algorithms()
+        click.echo("Common hash algorithms:")
+        for algo, desc in common_algos.items():
+            click.echo(f"  - {algo}: {desc}")
+        return
+    
+    # If neither list option is used, input file is required
+    if not input:
+        click.echo("Error: --input/-i is required when not using --list-algorithms or --show-common", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(1)
+    
+    try:
+        result = hash_file(algorithm, encoding, input)
+        click.echo(result)
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(1)
+    except FileNotFoundError:
+        click.echo(f"Error: File '{input}' not found", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(1)
+    except Exception as e:
+        click.echo(f"Error: {e}", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(1)
 
 
 @cli.command()
