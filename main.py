@@ -130,8 +130,21 @@ def hash_cmd(algorithm, input, encoding, list_algorithms, show_common):
               help='Encoding format')
 def hmac_cmd(algorithm, key, input, encoding):
     """Generate HMAC for a file"""
-    result = hmac_file(algorithm, key, encoding, input)
-    click.echo(result)
+    try:
+        result = hmac_file(algorithm, key, encoding, input)
+        click.echo(result)
+    except FileNotFoundError:
+        click.echo(f"Error: File '{input}' not found", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(1)
+    except AttributeError:
+        click.echo(f"Error: Unsupported algorithm '{algorithm}'", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(1)
+    except Exception as e:
+        click.echo(f"Error: {e}", err=True)
+        ctx = click.get_current_context()
+        ctx.exit(1)
 
 
 @cli.command(name='diffie-hellman')
