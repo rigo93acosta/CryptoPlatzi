@@ -8,10 +8,11 @@ def decipher(password: str, salt: str, size: int, input_file: str, output_file: 
     """Decrypt a file using AES-CBC"""
     # Derive key using scrypt
     kdf = Scrypt(
-        algorithm=hashes.SHA256(),
         length=size // 8,
         salt=salt.encode(),
-        iterations=100000,
+        n=2**14,  # CPU/memory cost parameter (16384)
+        r=8,      # block size parameter
+        p=1,      # parallelization parameter
         backend=default_backend()
     )
     key = kdf.derive(password.encode())
@@ -29,14 +30,25 @@ def decipher(password: str, salt: str, size: int, input_file: str, output_file: 
     
     # Read input file and decrypt
     with open(input_file, 'rb') as infile, open(output_file, 'wb') as outfile:
-        while True:
-            chunk = infile.read(8192)
-            if not chunk:
-                break
-            
-            decrypted_chunk = decryptor.update(chunk)
-            outfile.write(decrypted_chunk)
+        # Read and decrypt entire file
+        encrypted_data = infile.read()
+        
+        # Decrypt data in chunks
+        decrypted_data = b''
+        for i in range(0, len(encrypted_data), 8192):
+            chunk = encrypted_data[i:i+8192]
+            decrypted_data += decryptor.update(chunk)
         
         # Finalize
-        final_chunk = decryptor.finalize()
-        outfile.write(final_chunk)
+        decrypted_data += decryptor.finalize()
+        
+        # Remove PKCS7 padding
+        if decrypted_data:
+            padding_length = decrypted_data[-1]
+            if padding_length <= 16:
+                # Verify padding is valid
+                padding = decrypted_data[-padding_length:]
+                if all(b == padding_length for b in padding):
+                    decrypted_data = decrypted_data[:-padding_length]
+        
+        outfile.write(decrypted_data)
